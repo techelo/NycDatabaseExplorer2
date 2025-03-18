@@ -5,10 +5,9 @@ import MapVisualization from "@/components/map-visualization";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { BOROUGHS } from "@/lib/constants";
-import { Building } from "@shared/schema";
 
 // Sample building data (in a production app, this would come from the database)
-const sampleBuildings: Building[] = [
+const sampleBuildings = [
   {
     id: 1,
     address: "123 Main St",
@@ -78,24 +77,27 @@ export default function MapPage() {
     setTimeout(() => {
       const filteredBuildings = selectedBorough === "all" 
         ? sampleBuildings 
-        : sampleBuildings.filter(b => b.borough.toLowerCase() === selectedBorough.toLowerCase());
+        : sampleBuildings.filter(b => b.borough && 
+            b.borough.toLowerCase() === BOROUGHS.find(
+              borough => borough.id === selectedBorough
+            )?.name.toLowerCase());
       
       const points = filteredBuildings.map(building => ({
-        latitude: building.latitude,
-        longitude: building.longitude,
+        latitude: building.latitude || 0,
+        longitude: building.longitude || 0,
         properties: {
-          address: building.address,
-          riskScore: building.riskScore,
+          address: building.address || "",
+          riskScore: building.riskScore || 0,
           // Color based on risk score
-          color: building.riskScore > 70 
+          color: (building.riskScore || 0) > 70 
             ? "#ef4444" // High risk (red)
-            : building.riskScore > 40 
+            : (building.riskScore || 0) > 40 
               ? "#f59e0b" // Medium risk (amber)
               : "#10b981", // Low risk (green)
-          size: 16 + (building.riskScore / 10), // Size based on risk
-          borough: building.borough,
-          zipCode: building.zipCode,
-          buildingId: building.buildingId
+          size: 16 + ((building.riskScore || 0) / 10), // Size based on risk
+          borough: building.borough || "",
+          zipCode: building.zipCode || "",
+          buildingId: building.buildingId || ""
         }
       }));
       
@@ -155,13 +157,13 @@ export default function MapPage() {
                   
                   {BOROUGHS.map(borough => (
                     <Button 
-                      key={borough} 
-                      variant={selectedBorough === borough.toLowerCase() ? "default" : "outline"} 
+                      key={borough.id} 
+                      variant={selectedBorough === borough.id ? "default" : "outline"} 
                       size="sm"
                       className="mr-2 mb-2"
-                      onClick={() => setSelectedBorough(borough.toLowerCase())}
+                      onClick={() => setSelectedBorough(borough.id)}
                     >
-                      {borough}
+                      {borough.name}
                     </Button>
                   ))}
                 </div>

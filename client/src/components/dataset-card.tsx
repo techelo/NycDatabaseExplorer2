@@ -115,9 +115,13 @@ export default function DatasetCard({
             </TooltipProvider>
           </div>
           
-          <Link href={`/datasets/${id}`}>
-            <a className="text-primary hover:underline text-sm font-medium">Explore Data</a>
-          </Link>
+          <Button
+            variant="link"
+            className="text-primary hover:underline text-sm font-medium p-0"
+            onClick={() => window.location.href = `/datasets/${id}`}
+          >
+            Explore Data
+          </Button>
         </div>
       </div>
     </Card>
