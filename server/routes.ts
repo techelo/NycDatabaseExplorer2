@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import { aiQuerySchema, analysisResultSchema } from "@shared/schema";
-import { analyzeQuery, generateAutomatedInsights } from "./openai";
+import { analyzeQuery, generateAutomatedInsights } from "./huggingface";
 import { getNycdbData, getNycdbDatasets } from "./nycdb";
 
 export async function registerRoutes(app: Express): Promise<Server> {
