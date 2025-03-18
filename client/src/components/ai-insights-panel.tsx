@@ -349,9 +349,7 @@ export function useAutomatedInsights() {
     setError(null);
     
     try {
-      const response = await apiRequest('/api/ai/insights', {
-        method: 'GET'
-      });
+      const response = await apiRequest('/api/ai/insights');
       
       if (response && typeof response === 'object' && 'insights' in response) {
         setInsights(response.insights as AIInsight[]);

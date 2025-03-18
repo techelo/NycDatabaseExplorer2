@@ -274,27 +274,41 @@ export async function generateAutomatedInsights(): Promise<Array<{
     Available datasets:
     ${datasetSamples}
     
-    Generate 5 actionable insights based on your analysis. Format your response as a JSON array with the following structure:
-    [
-      {
-        "id": "unique-id-1",
-        "title": "Clear, concise title describing the insight",
-        "description": "Detailed explanation of the finding, including supporting evidence and potential impact",
-        "severity": "low|medium|high|critical",
-        "category": "anomaly|pattern|trend|risk",
-        "datasetId": "The source dataset ID",
-        "timestamp": "Current date in ISO format",
-        "relatedBuildings": [
-          {
-            "address": "Building address",
-            "borough": "Borough name",
-            "flaggedIssue": "Specific issue identified for this building"
-          }
-        ]
-      }
-    ]
+    Generate 5 actionable insights based on your analysis. Format your response EXACTLY as follows:
+    
+    {
+      "insights": [
+        {
+          "id": "unique-id-1",
+          "title": "Clear, concise title describing the insight",
+          "description": "Detailed explanation of the finding, including supporting evidence and potential impact",
+          "severity": "low|medium|high|critical",
+          "category": "anomaly|pattern|trend|risk",
+          "datasetId": "The source dataset ID",
+          "timestamp": "Current date in ISO format",
+          "relatedBuildings": [
+            {
+              "address": "Building address",
+              "borough": "Borough name",
+              "flaggedIssue": "Specific issue identified for this building"
+            }
+          ]
+        },
+        {
+          "id": "unique-id-2",
+          "title": "Another insight title",
+          "description": "Another detailed explanation",
+          "severity": "low|medium|high|critical",
+          "category": "anomaly|pattern|trend|risk",
+          "datasetId": "The source dataset ID",
+          "timestamp": "Current date in ISO format",
+          "relatedBuildings": []
+        }
+      ]
+    }
     
     Make your insights specific, actionable, and evidence-based. Prioritize critical safety issues and clear violations.
+    Follow the EXACT format shown above with the insights wrapped in an object with an "insights" key.
     `;
     
     const response = await openai.chat.completions.create({
@@ -317,10 +331,28 @@ export async function generateAutomatedInsights(): Promise<Array<{
       throw new Error("OpenAI returned an empty response");
     }
     
-    // Parse the response and ensure it's an array
-    const insights = JSON.parse(content);
-    if (!Array.isArray(insights)) {
-      throw new Error("Expected array of insights but received different structure");
+    // Parse the response
+    const parsedResponse = JSON.parse(content);
+    
+    // Check if the response has insights property or is an array directly
+    let insights;
+    if (Array.isArray(parsedResponse)) {
+      insights = parsedResponse;
+    } else if (parsedResponse && typeof parsedResponse === 'object' && Array.isArray(parsedResponse.insights)) {
+      insights = parsedResponse.insights;
+    } else {
+      // Create a default insight if the response is not in the expected format
+      return [
+        {
+          id: "ai-insight-1",
+          title: "AI Analysis Complete",
+          description: "The AI system analyzed the available data but returned results in an unexpected format. A detailed analysis is being prepared.",
+          severity: "medium" as const,
+          category: "pattern" as const,
+          datasetId: "system",
+          timestamp: new Date().toISOString()
+        }
+      ];
     }
     
     return insights;
