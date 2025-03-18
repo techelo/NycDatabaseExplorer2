@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Info, FileText, AlertTriangle, RefreshCw } from "lucide-react";
 import AIInsightsPanel, { useAutomatedInsights } from "@/components/ai-insights-panel";
 import { useToast } from "@/hooks/use-toast";
+import AIProviderBadge from "@/components/ai-provider-badge";
 
 export default function AIInsights() {
   const { toast } = useToast();
@@ -22,9 +23,12 @@ export default function AIInsights() {
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">AI-Generated Insights</h1>
-        <p className="text-neutral-600">
-          Automatically detected anomalies, patterns, and potential issues in NYC housing data.
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-neutral-600">
+            Automatically detected anomalies, patterns, and potential issues in NYC housing data.
+          </p>
+          <AIProviderBadge />
+        </div>
       </div>
       
       {/* Main content area */}
