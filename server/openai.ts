@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { AnalysisResult } from "@shared/schema";
-import { getNycdbData } from "./nycdb";
+import { getNycdbData, getNycdbDatasets } from "./nycdb";
 
 // Get the OpenAI API key from environment variables
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
@@ -224,4 +224,121 @@ function generateRiskBuildingsSample(borough: string): Array<{
       lastInspection: new Date(Date.now() - (i * 30 * 24 * 60 * 60 * 1000)).toLocaleDateString(),
     };
   });
+}
+
+/**
+ * Automatically generates AI insights based on NYCDB data
+ * This function analyzes patterns, anomalies, and potential issues in the data
+ * and flags irregularities or suspicious activities for further investigation
+ * @returns Array of AI-generated insights
+ */
+export async function generateAutomatedInsights(): Promise<Array<{
+  id: string;
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  category: 'anomaly' | 'pattern' | 'trend' | 'risk';
+  datasetId: string;
+  timestamp: string;
+  relatedBuildings?: Array<{
+    address: string;
+    borough: string;
+    flaggedIssue: string;
+  }>;
+}>> {
+  try {
+    if (!OPENAI_API_KEY) {
+      throw new Error("OpenAI API key is missing");
+    }
+    
+    // Get available datasets
+    const datasets = await getNycdbDatasets();
+    
+    // Sample data from each dataset
+    let datasetSamples = "";
+    for (const dataset of datasets.slice(0, 3)) { // Limit to 3 datasets to avoid excessive API usage
+      const data = await getNycdbData(dataset.name, 30);
+      datasetSamples += `Dataset: ${dataset.name}\nDescription: ${dataset.description}\nData:\n${JSON.stringify(data, null, 2)}\n\n`;
+    }
+    
+    // Create prompt for automated insights generation
+    const prompt = `
+    You are an expert AI analyst that automatically detects patterns, anomalies, and potential issues in NYC housing data.
+    Your task is to analyze the following datasets and identify key insights, focusing on:
+    
+    1. Unusual patterns or statistical anomalies that may indicate issues
+    2. Buildings with multiple serious violations that pose safety risks
+    3. Suspicious activities or misconduct that might require investigation
+    4. Emerging trends that could become significant issues if not addressed
+    
+    Available datasets:
+    ${datasetSamples}
+    
+    Generate 5 actionable insights based on your analysis. Format your response as a JSON array with the following structure:
+    [
+      {
+        "id": "unique-id-1",
+        "title": "Clear, concise title describing the insight",
+        "description": "Detailed explanation of the finding, including supporting evidence and potential impact",
+        "severity": "low|medium|high|critical",
+        "category": "anomaly|pattern|trend|risk",
+        "datasetId": "The source dataset ID",
+        "timestamp": "Current date in ISO format",
+        "relatedBuildings": [
+          {
+            "address": "Building address",
+            "borough": "Borough name",
+            "flaggedIssue": "Specific issue identified for this building"
+          }
+        ]
+      }
+    ]
+    
+    Make your insights specific, actionable, and evidence-based. Prioritize critical safety issues and clear violations.
+    `;
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are an AI data analyst specializing in NYC housing data analysis. You identify patterns, anomalies, violations, and risk factors in building data."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+    
+    const content = response.choices[0].message.content;
+    if (!content) {
+      throw new Error("OpenAI returned an empty response");
+    }
+    
+    // Parse the response and ensure it's an array
+    const insights = JSON.parse(content);
+    if (!Array.isArray(insights)) {
+      throw new Error("Expected array of insights but received different structure");
+    }
+    
+    return insights;
+    
+  } catch (error) {
+    console.error("Error generating automated insights:", error);
+    
+    // Return fallback insights
+    return [
+      {
+        id: "system-error-1",
+        title: "Error Generating Automated Insights",
+        description: "The system encountered an error while generating automated insights. This may be due to API limitations or data access issues.",
+        severity: "medium" as const,
+        category: "anomaly" as const,
+        datasetId: "system",
+        timestamp: new Date().toISOString()
+      }
+    ];
+  }
 }

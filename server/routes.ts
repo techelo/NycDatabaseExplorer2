@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import { aiQuerySchema, analysisResultSchema } from "@shared/schema";
-import { analyzeQuery } from "./openai";
+import { analyzeQuery, generateAutomatedInsights } from "./openai";
 import { getNycdbData, getNycdbDatasets } from "./nycdb";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -99,6 +99,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recent analyses:", error);
       res.status(500).json({ message: "Failed to fetch recent analyses" });
+    }
+  });
+
+  // Get automated AI insights
+  app.get("/api/ai/insights", async (req, res) => {
+    try {
+      const insights = await generateAutomatedInsights();
+      res.json({ insights });
+    } catch (error) {
+      console.error("Error generating automated insights:", error);
+      res.status(500).json({ message: "Failed to generate automated insights" });
     }
   });
 

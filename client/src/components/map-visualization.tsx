@@ -103,7 +103,7 @@ export default function MapVisualization({
           height, 
           position: 'relative',
           backgroundColor: '#e5e7eb', // Light gray background
-          backgroundImage: 'url("https://assets.codepen.io/12005/grid.svg")',
+          backgroundImage: 'linear-gradient(#d1d5db 1px, transparent 1px), linear-gradient(90deg, #d1d5db 1px, transparent 1px)',
           backgroundSize: '50px 50px',
           borderRadius: '0.375rem',
           overflow: 'hidden'
