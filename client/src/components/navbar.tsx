@@ -26,6 +26,7 @@ export default function Navbar() {
     { href: "/", label: "Dashboard" },
     { href: "/datasets", label: "Datasets" },
     { href: "/ai-analysis", label: "AI Analysis" },
+    { href: "/ai-insights", label: "AI Insights" },
     { href: "/map", label: "Map View" },
     { href: "/docs", label: "Documentation" },
   ];
