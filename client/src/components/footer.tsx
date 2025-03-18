@@ -23,23 +23,23 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/datasets?source=dob">
-                  <a className="text-neutral-400 hover:text-white">Department of Buildings</a>
+                <Link href="/datasets?source=dob" className="text-neutral-400 hover:text-white">
+                  Department of Buildings
                 </Link>
               </li>
               <li>
-                <Link href="/datasets?source=hpd">
-                  <a className="text-neutral-400 hover:text-white">HPD Records</a>
+                <Link href="/datasets?source=hpd" className="text-neutral-400 hover:text-white">
+                  HPD Records
                 </Link>
               </li>
               <li>
-                <Link href="/datasets?source=pluto">
-                  <a className="text-neutral-400 hover:text-white">PLUTO Data</a>
+                <Link href="/datasets?source=pluto" className="text-neutral-400 hover:text-white">
+                  PLUTO Data
                 </Link>
               </li>
               <li>
-                <Link href="/datasets">
-                  <a className="text-neutral-400 hover:text-white">All Datasets</a>
+                <Link href="/datasets" className="text-neutral-400 hover:text-white">
+                  All Datasets
                 </Link>
               </li>
             </ul>
@@ -51,23 +51,23 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/ai-analysis">
-                  <a className="text-neutral-400 hover:text-white">AI Analysis</a>
+                <Link href="/ai-analysis" className="text-neutral-400 hover:text-white">
+                  AI Analysis
                 </Link>
               </li>
               <li>
-                <Link href="/datasets">
-                  <a className="text-neutral-400 hover:text-white">Data Visualization</a>
+                <Link href="/datasets" className="text-neutral-400 hover:text-white">
+                  Data Visualization
                 </Link>
               </li>
               <li>
-                <Link href="/map">
-                  <a className="text-neutral-400 hover:text-white">Map View</a>
+                <Link href="/map" className="text-neutral-400 hover:text-white">
+                  Map View
                 </Link>
               </li>
               <li>
-                <Link href="/api">
-                  <a className="text-neutral-400 hover:text-white">API Access</a>
+                <Link href="/api" className="text-neutral-400 hover:text-white">
+                  API Access
                 </Link>
               </li>
             </ul>
@@ -79,13 +79,13 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/docs">
-                  <a className="text-neutral-400 hover:text-white">Documentation</a>
+                <Link href="/docs" className="text-neutral-400 hover:text-white">
+                  Documentation
                 </Link>
               </li>
               <li>
-                <Link href="/api-docs">
-                  <a className="text-neutral-400 hover:text-white">API Reference</a>
+                <Link href="/api-docs" className="text-neutral-400 hover:text-white">
+                  API Reference
                 </Link>
               </li>
               <li>
@@ -99,8 +99,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <Link href="/contact">
-                  <a className="text-neutral-400 hover:text-white">Contact Support</a>
+                <Link href="/contact" className="text-neutral-400 hover:text-white">
+                  Contact Support
                 </Link>
               </li>
             </ul>

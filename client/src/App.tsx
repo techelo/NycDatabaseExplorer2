@@ -9,6 +9,7 @@ import Dashboard from "@/pages/dashboard";
 import Datasets from "@/pages/datasets";
 import AiAnalysis from "@/pages/ai-analysis";
 import DatasetDetails from "@/pages/dataset-details";
+import MapPage from "@/pages/map";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
           <Route path="/datasets" component={Datasets} />
           <Route path="/datasets/:id" component={DatasetDetails} />
           <Route path="/ai-analysis" component={AiAnalysis} />
+          <Route path="/map" component={MapPage} />
           <Route component={NotFound} />
         </Switch>
       </div>
