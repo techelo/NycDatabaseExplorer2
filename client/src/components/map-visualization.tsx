@@ -1,19 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { MAPBOX_CONFIG } from "@/lib/constants";
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 
-// Fix Leaflet default icon issue in React
-// This is needed because Leaflet's default marker icons have relative paths that don't work in a bundled app
-// We'll set this up once when the component is imported
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-});
+// Create a simplified map visualization component without using external libraries
+// This will create a basic placeholder map with dots for points
 
 interface MapPoint {
   latitude: number;
@@ -45,69 +35,81 @@ export default function MapVisualization({
   height = "400px",
   legendItems,
 }: MapVisualizationProps) {
-  // Swap the coordinates for Leaflet (lat, lng instead of lng, lat)
-  const leafletCenter: [number, number] = [center[1], center[0]];
+  const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Create custom icon for markers
-  const createCustomIcon = (color: string, size: number) => {
-    return L.divIcon({
-      className: 'custom-marker',
-      html: `<div style="
-        width: ${size}px;
-        height: ${size}px;
-        border-radius: 50%;
-        background-color: ${color};
-        border: 2px solid white;
-        box-shadow: 0 0 5px rgba(0,0,0,0.3);
-      "></div>`,
-      iconSize: [size, size],
-      iconAnchor: [size/2, size/2]
-    });
+  // Convert lat/long to x/y coordinates in our simple map
+  const latLngToPoint = (lat: number, lng: number, bounds: DOMRect) => {
+    const centerLat = center[1];
+    const centerLng = center[0];
+    
+    // Simple conversion based on distance from center
+    const x = bounds.width / 2 + (lng - centerLng) * (bounds.width / 10);
+    const y = bounds.height / 2 - (lat - centerLat) * (bounds.height / 5);
+    
+    return { x, y };
   };
+
+  // Render the simple map
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    
+    const container = canvasRef.current;
+    const bounds = container.getBoundingClientRect();
+    
+    // Clear existing points
+    container.innerHTML = '';
+    
+    // Add points
+    points.forEach((point) => {
+      const { x, y } = latLngToPoint(point.latitude, point.longitude, bounds);
+      const size = point.properties.size || 14;
+      const color = point.properties.color || '#4361EE';
+      
+      const marker = document.createElement('div');
+      marker.style.position = 'absolute';
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+      marker.style.width = `${size}px`;
+      marker.style.height = `${size}px`;
+      marker.style.borderRadius = '50%';
+      marker.style.backgroundColor = color;
+      marker.style.border = '2px solid white';
+      marker.style.boxShadow = '0 0 5px rgba(0,0,0,0.3)';
+      marker.style.transform = 'translate(-50%, -50%)';
+      marker.style.zIndex = '100';
+      
+      // Add tooltip on hover
+      if (point.properties.address) {
+        marker.title = point.properties.address;
+        
+        // Add click handler for more detailed info
+        marker.addEventListener('click', () => {
+          alert(`${point.properties.address}${point.properties.riskScore ? 
+            `\nRisk Score: ${point.properties.riskScore}` : ''}`);
+        });
+        
+        marker.style.cursor = 'pointer';
+      }
+      
+      container.appendChild(marker);
+    });
+  }, [points, center, zoom]);
 
   return (
     <div className="relative">
       <div 
-        style={{ height }} 
-        className="w-full rounded-md overflow-hidden"
-      >
-        <MapContainer 
-          center={leafletCenter} 
-          zoom={zoom} 
-          style={{ height: '100%', width: '100%' }}
-          zoomControl={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <ZoomControl position="topright" />
-          
-          {points.map((point, index) => {
-            const size = point.properties.size || 14;
-            const color = point.properties.color || '#4361EE';
-            
-            return (
-              <Marker
-                key={index}
-                position={[point.latitude, point.longitude]}
-                icon={createCustomIcon(color, size)}
-              >
-                {point.properties.address && (
-                  <Popup>
-                    <div>
-                      <strong>{point.properties.address}</strong>
-                      {point.properties.riskScore && 
-                        <div>Risk Score: {point.properties.riskScore}</div>
-                      }
-                    </div>
-                  </Popup>
-                )}
-              </Marker>
-            );
-          })}
-        </MapContainer>
-      </div>
+        ref={canvasRef}
+        style={{ 
+          height, 
+          position: 'relative',
+          backgroundColor: '#e5e7eb', // Light gray background
+          backgroundImage: 'url("https://assets.codepen.io/12005/grid.svg")',
+          backgroundSize: '50px 50px',
+          borderRadius: '0.375rem',
+          overflow: 'hidden'
+        }}
+        className="w-full"
+      />
       
       {/* Legend */}
       {legendItems && legendItems.length > 0 && (
@@ -126,6 +128,11 @@ export default function MapVisualization({
           </div>
         </Card>
       )}
+      
+      {/* Map attribution */}
+      <div className="absolute bottom-1 right-2 text-[10px] text-gray-500">
+        Simple Map Visualization
+      </div>
     </div>
   );
 }

@@ -23,9 +23,9 @@ import { useMapPoints } from "@/hooks/use-mapbox";
 
 export default function DatasetDetails() {
   const [location] = useLocation();
-  const id = location.split('/').pop();
+  const id = location.split('/').pop() || '';
   
-  const { dataset, fields, isLoading: detailsLoading, error: detailsError } = useDatasetDetails(id || '');
+  const { dataset, fields, isLoading: detailsLoading, error: detailsError } = useDatasetDetails(id);
   const { data: sampleData, isLoading: sampleLoading, error: sampleError } = useDatasetSample(id, 25);
   
   const [currentTab, setCurrentTab] = useState("overview");
@@ -159,7 +159,7 @@ export default function DatasetDetails() {
                   <div className="flex items-center">
                     <i className="fas fa-external-link-alt mr-2"></i>
                     <a 
-                      href={dataset.sourceUrl} 
+                      href={dataset.sourceUrl || "#"} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-primary hover:underline"
@@ -365,18 +365,18 @@ export default function DatasetDetails() {
                   <CardContent>
                     <ul className="space-y-3">
                       <li>
-                        <Link href="/datasets/dob_complaints">
-                          <a className="text-primary hover:underline">DOB Complaints</a>
+                        <Link href="/datasets/dob_complaints" className="text-primary hover:underline">
+                          DOB Complaints
                         </Link>
                       </li>
                       <li>
-                        <Link href="/datasets/hpd_violations">
-                          <a className="text-primary hover:underline">HPD Violations</a>
+                        <Link href="/datasets/hpd_violations" className="text-primary hover:underline">
+                          HPD Violations
                         </Link>
                       </li>
                       <li>
-                        <Link href="/datasets/pluto">
-                          <a className="text-primary hover:underline">PLUTO Data</a>
+                        <Link href="/datasets/pluto" className="text-primary hover:underline">
+                          PLUTO Data
                         </Link>
                       </li>
                     </ul>

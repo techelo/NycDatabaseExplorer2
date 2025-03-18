@@ -10,10 +10,11 @@ import {
 import { Menu } from "lucide-react";
 
 const NavbarLink = ({ href, isActive, children }: { href: string; isActive: boolean; children: React.ReactNode }) => (
-  <Link href={href}>
-    <a className={`px-1 py-2 text-sm font-medium ${isActive ? 'text-primary border-b-2 border-primary' : 'text-neutral-600 hover:text-primary'}`}>
-      {children}
-    </a>
+  <Link 
+    href={href}
+    className={`px-1 py-2 text-sm font-medium ${isActive ? 'text-primary border-b-2 border-primary' : 'text-neutral-600 hover:text-primary'}`}
+  >
+    {children}
   </Link>
 );
 
@@ -92,10 +93,12 @@ export default function Navbar() {
               <SheetContent side="left">
                 <div className="flex flex-col gap-4 mt-8">
                   {navLinks.map((link) => (
-                    <Link key={link.href} href={link.href}>
-                      <a className={`${location === link.href ? 'text-primary font-medium' : 'text-neutral-600'} py-2`}>
-                        {link.label}
-                      </a>
+                    <Link 
+                      key={link.href} 
+                      href={link.href}
+                      className={`${location === link.href ? 'text-primary font-medium' : 'text-neutral-600'} py-2`}
+                    >
+                      {link.label}
                     </Link>
                   ))}
                 </div>
