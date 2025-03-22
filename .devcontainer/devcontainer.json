@@ -1,26 +1,26 @@
 {
-    "name": "My Project",
-    "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-    "features": {
-      "ghcr.io/devcontainers/features/postgres:1": {
-        "version": "16",
-        "database": "mydatabase",
-        "user": "myuser",
-        "password": "mypassword"
-      }
-    },
-    "forwardPorts": [5000],
-    "postCreateCommand": "npm install",
-    "customizations": {
-      "vscode": {
-        "settings": {
-          "editor.formatOnSave": true
-        },
-        "extensions": [
-          "dbaeumer.vscode-eslint",
-          "esbenp.prettier-vscode"
-        ]
-      }
-    },
-    "remoteUser": "node"
-  }
+  "name": "My Project",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/postgres:1": {
+      "version": "16",
+      "database": "mydatabase",
+      "user": "myuser",
+      "password": "mypassword"
+    }
+  },
+  "forwardPorts": [5000],
+  "postCreateCommand": "npm install && npm run dev",  // Combining installation and running the app
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "remoteUser": "node"
+}
